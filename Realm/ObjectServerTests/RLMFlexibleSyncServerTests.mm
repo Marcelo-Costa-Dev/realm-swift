@@ -1096,7 +1096,12 @@
 
 - (void)testSubscribeWithName {
     bool didPopulate = [self populateData:^(RLMRealm *realm) {
-        [self createPeople:realm partition:_cmd];
+        Person *person = [[Person alloc] initWithPrimaryKey:[RLMObjectId objectId]
+                                                        age:30
+                                                  firstName:@"Brian"
+                                                   lastName:@"Epstein"];
+        person.partition = NSStringFromSelector(_cmd);
+        [realm addObject:person];
     }];
     if (!didPopulate) {
         return;
@@ -1107,11 +1112,11 @@
     CHECK_COUNT(0, Person, realm);
 
     XCTestExpectation *ex = [self expectationWithDescription:@"wait for download"];
-    [[[Person allObjectsInRealm:realm] objectsWhere:@"age > 20"] subscribeWithCompletion:^(RLMResults* results, NSError* error) {
+    [[[Person allObjectsInRealm:realm] objectsWhere:@"lastName == 'Epstein'"] subscribeWithCompletion:^(RLMResults *results, NSError *error) {
         XCTAssertNil(error);
-        XCTAssertEqual(results.count, 2U);
+        XCTAssertEqual(results.count, 1U);
         [ex fulfill];
-    }];
+    } onQueue:dispatch_get_main_queue()];
     XCTAssertEqual(realm.subscriptions.count, 1UL);
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
 }
@@ -1131,11 +1136,8 @@
     [[realm syncSession] suspend];
     XCTestExpectation *ex = [self expectationWithDescription:@"expect timeout"];
     NSTimeInterval ti = 2.0;
-    RLMResults *res = [[Person allObjectsInRealm:realm] objectsWhere:@"age > 20"];
-    [res subscribeWithName:@"20up"
-           waitForSyncMode:RLMWaitForSyncModeAlways
-                   timeout:ti
-                completion:^(RLMResults *results, NSError *error) {
+    RLMResults *res = [[Person allObjectsInRealm:realm] objectsWhere:@"age >= 20"];
+    [res subscribeWithName:@"20up" waitForSyncMode:RLMWaitForSyncModeAlways onQueue:dispatch_get_main_queue() timeout:2.0 completion:^(RLMResults *results, NSError *error) {
         XCTAssert(error);
         NSString *expectedDesc = [NSString stringWithFormat:@"Waiting for subscribed data timedout after %f seconds.", ti];
         XCTAssert([error.localizedDescription isEqualToString:expectedDesc]);
@@ -1145,6 +1147,8 @@
     XCTAssertEqual(realm.subscriptions.count, 1UL);
     [self waitForExpectationsWithTimeout:5.0 handler:nil];
 
+    // resume session and wait for complete
+    // otherwise test will not tear down successfully
     [[realm syncSession] resume];
     NSDate * start = [[NSDate alloc] init];
     while (realm.subscriptions.state != RLMSyncSubscriptionStateComplete && start.timeIntervalSinceNow > -10.0) {
