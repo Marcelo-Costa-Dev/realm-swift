@@ -380,7 +380,7 @@ import Combine
                 acknowledge at least one subscription.
      */
     public func removeAll(unnamedOnly: Bool = false) {
-        unnamedOnly ? rlmSyncSubscriptionSet.removeAllSubscriptions() : rlmSyncSubscriptionSet.removeAllUnnamedSubscriptions()
+        unnamedOnly ? rlmSyncSubscriptionSet.removeAllUnnamedSubscriptions() : rlmSyncSubscriptionSet.removeAllSubscriptions()
     }
 
     /**
