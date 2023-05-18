@@ -47,6 +47,9 @@ using namespace realm;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
 @implementation RLMNotificationToken
+- (bool)invalidate {
+    return false;
+}
 @end
 #pragma clang diagnostic pop
 

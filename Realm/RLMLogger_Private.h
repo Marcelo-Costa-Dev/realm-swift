@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////
 //
-// Copyright 2016 Realm Inc.
+// Copyright 2023 Realm Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,11 +16,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void RLMSwapOutClassMethod(id classObject, SEL original, SEL swizzled);
-void RLMSwapOutInstanceMethod(id classObject, SEL original, SEL swizzled);
+#import <Realm/RLMLogger.h>
+#import <Realm/RLMConstants.h>
 
-#ifndef CUSTOM_REALM_URL
-#define CUSTOM_REALM_URL(realm_identifier) \
-[NSURL URLWithString:[NSString stringWithFormat:@"realm://127.0.0.1:9080/~/%@%@", NSStringFromSelector(_cmd), realm_identifier]]
-#define REALM_URL() CUSTOM_REALM_URL(@"")
-#endif
+RLM_HEADER_AUDIT_BEGIN(nullability)
+
+@interface RLMLogger()
+
+/**
+ Log a message to the supplied level.
+
+ @param logLevel The log level for the message.
+ @param message The message to log.
+ */
+- (void)logWithLevel:(RLMLogLevel)logLevel message:(NSString *)message, ... NS_SWIFT_UNAVAILABLE("");
+- (void)logLevel:(RLMLogLevel)logLevel message:(NSString *)message;
+@end
+
+RLM_HEADER_AUDIT_END(nullability)

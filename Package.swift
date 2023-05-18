@@ -3,8 +3,8 @@
 import PackageDescription
 import Foundation
 
-let coreVersionStr = "13.9.4"
-let cocoaVersionStr = "10.38.3"
+let coreVersionStr = "13.10.1"
+let cocoaVersionStr = "10.39.1"
 
 let coreVersionPieces = coreVersionStr.split(separator: ".")
 let coreVersionExtra = coreVersionPieces[2].split(separator: "-")
@@ -50,8 +50,6 @@ let objectServerTestSources = [
     "RLMServerTestObjects.m",
     "RLMSyncTestCase.h",
     "RLMSyncTestCase.mm",
-    "RLMTestUtils.h",
-    "RLMTestUtils.m",
     "RLMUser+ObjectServerTests.h",
     "RLMUser+ObjectServerTests.mm",
     "RLMWatchTestUtility.h",
@@ -166,6 +164,7 @@ let package = Package(
                 "Realm/RLMEmbeddedObject.mm",
                 "Realm/RLMError.mm",
                 "Realm/RLMEvent.mm",
+                "Realm/RLMLogger.mm",
                 "Realm/RLMManagedArray.mm",
                 "Realm/RLMManagedDictionary.mm",
                 "Realm/RLMManagedSet.mm",
