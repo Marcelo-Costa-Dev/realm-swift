@@ -144,7 +144,7 @@ static void RLMConfigureSyncConnectionParameters(realm::app::App::Config config)
     // Anonymized BundleId
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     NSData *bundleIdData = [bundleId dataUsingEncoding:NSUTF8StringEncoding];
-    RLMNSStringToStdString(config.device_info.bundle_id, RLMHashData(bundleIdData.bytes, bundleIdData.length));
+    RLMNSStringToStdString(config.device_info.bundle_id, RLMHashBase16Data(bundleIdData.bytes, bundleIdData.length));
 
     config.device_info.sdk = "Realm Swift";
     RLMNSStringToStdString(config.device_info.sdk_version, REALM_COCOA_VERSION);
@@ -152,9 +152,7 @@ static void RLMConfigureSyncConnectionParameters(realm::app::App::Config config)
     auto processInfo = [NSProcessInfo processInfo];
     RLMNSStringToStdString(config.device_info.platform_version,
                            [processInfo operatingSystemVersionString] ?: @"unknown");
-#if TARGET_OS_MACCATALYST
-    config.device_info.framework_name = "maccatalyst";
-#endif
+
     RLMNSStringToStdString(config.device_info.framework_version, @__clang_version__);
 
 #if TARGET_OS_IPHONE || TARGET_OS_WATCH || TARGET_OS_TV || TARGET_OS_MACCATALYST
@@ -162,9 +160,7 @@ static void RLMConfigureSyncConnectionParameters(realm::app::App::Config config)
 #endif
     struct utsname systemInfo;
     uname(&systemInfo);
-    RLMNSStringToStdString(config.device_info.device_version,
-                           [NSString stringWithCString:systemInfo.machine
-                                              encoding:NSUTF8StringEncoding]);
+    config.device_info.device_version = systemInfo.machine;
 }
 
 - (realm::app::App::Config&)config {

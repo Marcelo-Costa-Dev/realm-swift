@@ -59,4 +59,4 @@
 #import <Foundation/Foundation.h>
 
 void RLMSendAnalytics(RLMRealmConfiguration *configuration, RLMSchema *schema);
-static NSString *RLMHashData(const void *bytes, size_t length);
+NSString *RLMHashBase16Data(const void *bytes, size_t length);
