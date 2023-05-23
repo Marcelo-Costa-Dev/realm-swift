@@ -23,6 +23,7 @@
 #import <UIKit/UIKit.h>
 #endif
 
+#import "RLMAnalytics.hpp"
 #import "RLMBSON_Private.hpp"
 #import "RLMCredentials_Private.hpp"
 #import "RLMEmailPasswordAuth.h"
@@ -140,7 +141,11 @@ namespace {
 }
 
 static void RLMConfigureSyncConnectionParameters(realm::app::App::Config config) {
-    RLMNSStringToStdString(config.device_info.bundle_id, [[NSBundle mainBundle] bundleIdentifier]);
+    // Anonymized BundleId
+    NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    NSData *bundleIdData = [bundleId dataUsingEncoding:NSUTF8StringEncoding];
+    RLMNSStringToStdString(config.device_info.bundle_id, RLMHashData(bundleIdData.bytes, bundleIdData.length));
+
     config.device_info.sdk = "Realm Swift";
     RLMNSStringToStdString(config.device_info.sdk_version, REALM_COCOA_VERSION);
 
