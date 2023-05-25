@@ -12,6 +12,10 @@ supported version.
 ### Fixed
 * Allow support for implicit boolean queries on Swift's Type Safe Queries API
   ([#8212](https://github.com/realm/realm-swift/issues/8212)).
+* `-[RLMAsymmetricObject createObject:withValue:]` was marked as having a
+  non-null return value despite always returning `nil` (since v10.29.0).
+* Eliminate several clang static analyzer warnings which did not report actual
+  bugs.
 
 <!-- ### Breaking Changes - ONLY INCLUDE FOR NEW MAJOR version -->
 

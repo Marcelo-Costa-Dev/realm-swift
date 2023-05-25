@@ -437,6 +437,7 @@
         }];
     }
     [self waitForExpectationsWithTimeout:2.0 handler:nil];
+    [token invalidate];
 }
 
 - (void)testCancellationTokenPreventsOpeningRealmWithMismatchedConfig {
