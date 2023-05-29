@@ -3,8 +3,8 @@
 import PackageDescription
 import Foundation
 
-let coreVersionStr = "13.10.1"
-let cocoaVersionStr = "10.39.1"
+let coreVersionStr = "13.13.0"
+let cocoaVersionStr = "10.40.0"
 
 let coreVersionPieces = coreVersionStr.split(separator: ".")
 let coreVersionExtra = coreVersionPieces[2].split(separator: "-")
@@ -98,10 +98,10 @@ func objectServerTestTarget(name: String, sources: [String]) -> Target {
 let package = Package(
     name: "Realm",
     platforms: [
-        .macOS(.v10_10),
+        .macOS(.v10_13),
         .iOS(.v11),
-        .tvOS(.v9),
-        .watchOS(.v2)
+        .tvOS(.v11),
+        .watchOS(.v4)
     ],
     products: [
         .library(

@@ -65,7 +65,6 @@ class SwiftEventTests: SwiftSyncTestCase {
     var collection: MongoCollection!
     var start: Date!
 
-    @MainActor // for Xcode 13; 14 inherits it properly from the class
     override func setUp() {
         user = try! logInUser(for: basicCredentials())
         let mongoClient = user.mongoClient("mongodb1")
@@ -78,7 +77,6 @@ class SwiftEventTests: SwiftSyncTestCase {
         start = Date(timeIntervalSinceNow: -1.0)
     }
 
-    @MainActor // for Xcode 13; 14 inherits it properly from the class
     override func tearDown() {
         if let user = self.user {
             while user.allSessions.count > 0 {
@@ -549,7 +547,7 @@ class SwiftEventTests: SwiftSyncTestCase {
     }
 
     func testErrorHandler() throws {
-        var config = try self.config()
+        var config = self.config()
         let blockCalled = Locked(false)
         let ex = expectation(description: "Error callback called")
         config.eventConfiguration?.errorHandler = { error in
