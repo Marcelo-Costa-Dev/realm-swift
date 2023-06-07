@@ -19,7 +19,20 @@
 import Foundation
 import RealmSwift
 import Realm
+import RealmMacro
 
+@RealmModel class MacroObject: Object {
+    @Persisted(primaryKey: true) var pk: ObjectId
+    var ignored: Int = 1
+    @Persisted var intCol: Int
+    @Persisted(indexed: true) var indexed: Int
+
+    @Persisted var obj: MacroObject?
+    @Persisted(originProperty: "obj")
+    var linkingObjects: LinkingObjects<MacroObject>
+}
+
+@RealmModel
 class ModernAllTypesObject: Object {
     @Persisted(primaryKey: true) var pk: ObjectId
     var ignored: Int = 1
@@ -160,6 +173,7 @@ class ModernAllTypesObject: Object {
     var linkingObjects: LinkingObjects<ModernAllTypesObject>
 }
 
+@RealmModel
 class LinkToModernAllTypesObject: Object {
     @Persisted var object: ModernAllTypesObject?
     @Persisted var list: List<ModernAllTypesObject>
@@ -178,6 +192,7 @@ enum ModernStringEnum: String, Codable, PersistableEnum {
     case value3 = "e"
 }
 
+@RealmModel
 class ModernImplicitlyUnwrappedOptionalObject: Object {
     @Persisted var optStringCol: String!
     @Persisted var optBinaryCol: Data!
@@ -188,6 +203,7 @@ class ModernImplicitlyUnwrappedOptionalObject: Object {
     @Persisted var optUuidCol: UUID!
 }
 
+@RealmModel
 class ModernLinkToPrimaryStringObject: Object {
     @Persisted var pk = ""
     @Persisted var object: ModernPrimaryStringObject?
@@ -198,6 +214,7 @@ class ModernLinkToPrimaryStringObject: Object {
     }
 }
 
+@RealmModel
 class ModernUTF8Object: Object {
     // swiftlint:disable:next identifier_name
     @Persisted var 柱колоéнǢкƱаم👍 = "值значен™👍☞⎠‱௹♣︎☐▼❒∑⨌⧭иеمرحبا"
@@ -208,86 +225,107 @@ protocol ModernPrimaryKeyObject: Object {
     var pk: PrimaryKey { get set }
 }
 
+@RealmModel
 class ModernPrimaryStringObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: String
 }
 
+@RealmModel
 class ModernPrimaryOptionalStringObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: String?
 }
 
+@RealmModel
 class ModernPrimaryIntObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int
 }
 
+@RealmModel
 class ModernPrimaryOptionalIntObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int?
 }
 
+@RealmModel
 class ModernPrimaryInt8Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int8
 }
 
+@RealmModel
 class ModernPrimaryOptionalInt8Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int8?
 }
 
+@RealmModel
 class ModernPrimaryInt16Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int16
 }
 
+@RealmModel
 class ModernPrimaryOptionalInt16Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int16?
 }
 
+@RealmModel
 class ModernPrimaryInt32Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int32
 }
 
+@RealmModel
 class ModernPrimaryOptionalInt32Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int32?
 }
 
+@RealmModel
 class ModernPrimaryInt64Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int64
 }
 
+@RealmModel
 class ModernPrimaryOptionalInt64Object: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: Int64?
 }
 
+@RealmModel
 class ModernPrimaryUUIDObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: UUID
 }
 
+@RealmModel
 class ModernPrimaryOptionalUUIDObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: UUID?
 }
 
+@RealmModel
 class ModernPrimaryObjectIdObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: ObjectId
 }
 
+@RealmModel
 class ModernPrimaryOptionalObjectIdObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: ObjectId?
 }
 
+@RealmModel
 class ModernPrimaryIntEnumObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: ModernIntEnum
 }
 
+@RealmModel
 class ModernPrimaryOptionalIntEnumObject: Object, ModernPrimaryKeyObject {
     @Persisted(primaryKey: true) var pk: ModernIntEnum?
 }
 
+@RealmModel
 class ModernIndexedIntEnumObject: Object {
     @Persisted(indexed: true) var value: ModernIntEnum
 }
 
+@RealmModel
 class ModernIndexedOptionalIntEnumObject: Object {
     @Persisted(indexed: true) var value: ModernIntEnum?
 }
 
+@RealmModel
 class ModernCustomInitializerObject: Object {
     @Persisted var stringCol: String
 
@@ -302,6 +340,7 @@ class ModernCustomInitializerObject: Object {
     }
 }
 
+@RealmModel
 class ModernConvenienceInitializerObject: Object {
     @Persisted var stringCol = ""
 
@@ -311,16 +350,19 @@ class ModernConvenienceInitializerObject: Object {
     }
 }
 
+@RealmModel
 @objc(ModernObjcRenamedObject)
 class ModernObjcRenamedObject: Object {
     @Persisted var stringCol = ""
 }
 
+@RealmModel
 @objc(ModernObjcRenamedObjectWithTotallyDifferentName)
 class ModernObjcArbitrarilyRenamedObject: Object {
     @Persisted var boolCol = false
 }
 
+@RealmModel
 class ModernIntAndStringObject: Object {
     @Persisted var intCol: Int
     @Persisted var optIntCol: Int?
@@ -328,22 +370,26 @@ class ModernIntAndStringObject: Object {
     @Persisted var optStringCol: String?
 }
 
+@RealmModel
 class ModernCollectionObject: Object {
     @Persisted var list: List<ModernAllTypesObject>
     @Persisted var set: MutableSet<ModernAllTypesObject>
     @Persisted var map: Map<String, ModernAllTypesObject?>
 }
 
+@RealmModel
 class ModernCircleObject: Object {
     @Persisted var obj: ModernCircleObject?
     @Persisted var array: List<ModernCircleObject>
 }
 
+@RealmModel
 class ModernEmbeddedParentObject: Object {
     @Persisted var object: ModernEmbeddedTreeObject1?
     @Persisted var array: List<ModernEmbeddedTreeObject1>
 }
 
+@RealmModel
 class ModernEmbeddedPrimaryParentObject: Object {
     @Persisted(primaryKey: true) var pk: Int = 0
     @Persisted var object: ModernEmbeddedTreeObject1?
@@ -354,6 +400,7 @@ protocol ModernEmbeddedTreeObject: EmbeddedObject {
     var value: Int { get set }
 }
 
+@RealmModel
 class ModernEmbeddedTreeObject1: EmbeddedObject, ModernEmbeddedTreeObject {
     @Persisted var value = 0
     @Persisted var bool = false
@@ -366,6 +413,7 @@ class ModernEmbeddedTreeObject1: EmbeddedObject, ModernEmbeddedTreeObject {
     var parent2: LinkingObjects<ModernEmbeddedParentObject>
 }
 
+@RealmModel
 class ModernEmbeddedTreeObject2: EmbeddedObject, ModernEmbeddedTreeObject {
     @Persisted var value = 0
     @Persisted var child: ModernEmbeddedTreeObject3?
@@ -377,6 +425,7 @@ class ModernEmbeddedTreeObject2: EmbeddedObject, ModernEmbeddedTreeObject {
     var parent4: LinkingObjects<ModernEmbeddedTreeObject1>
 }
 
+@RealmModel
 class ModernEmbeddedTreeObject3: EmbeddedObject, ModernEmbeddedTreeObject {
     @Persisted var value = 0
 
@@ -386,10 +435,12 @@ class ModernEmbeddedTreeObject3: EmbeddedObject, ModernEmbeddedTreeObject {
     var parent4: LinkingObjects<ModernEmbeddedTreeObject2>
 }
 
+@RealmModel
 class ModernEmbeddedObject: EmbeddedObject {
     @Persisted var value = 0
 }
 
+@RealmModel
 class SetterObservers: Object {
     @Persisted var value: Int {
         willSet {
@@ -404,6 +455,7 @@ class SetterObservers: Object {
     var didSetCallback: (() -> Void)?
 }
 
+@RealmModel
 class ObjectWithArcMethodCategoryNames: Object {
     // @objc properties with these names would crash with asan (and unreliably
     // without it) because they would not have the correct behavior for the
@@ -415,6 +467,7 @@ class ObjectWithArcMethodCategoryNames: Object {
     @Persisted var initValue: String
 }
 
+@RealmModel
 class ModernAllIndexableTypesObject: Object {
     @Persisted(indexed: true) var boolCol: Bool
     @Persisted(indexed: true) var intCol: Int
@@ -443,6 +496,7 @@ class ModernAllIndexableTypesObject: Object {
     @Persisted(indexed: true) var optStringEnumCol: ModernStringEnum?
 }
 
+@RealmModel
 class ModernAllIndexableButNotIndexedObject: Object {
     @Persisted(indexed: false) var boolCol: Bool
     @Persisted(indexed: false) var intCol: Int
@@ -471,6 +525,7 @@ class ModernAllIndexableButNotIndexedObject: Object {
     @Persisted(indexed: false) var optStringEnumCol: ModernStringEnum?
 }
 
+@RealmModel
 class ModernCollectionsOfEnums: Object {
     @Persisted var listInt: List<EnumInt>
     @Persisted var listInt8: List<EnumInt8>
@@ -527,6 +582,7 @@ class ModernCollectionsOfEnums: Object {
     @Persisted var mapStringOpt: Map<String, EnumString?>
 }
 
+@RealmModel
 class LinkToModernCollectionsOfEnums: Object {
     @Persisted var object: ModernCollectionsOfEnums?
     @Persisted var list: List<ModernCollectionsOfEnums>
@@ -534,6 +590,7 @@ class LinkToModernCollectionsOfEnums: Object {
     @Persisted var map: Map<String, ModernCollectionsOfEnums?>
 }
 
+@RealmModel
 class ModernListAnyRealmValueObject: Object {
     @Persisted var value: List<AnyRealmValue>
 }

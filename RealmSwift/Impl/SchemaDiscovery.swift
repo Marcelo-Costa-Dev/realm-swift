@@ -20,6 +20,10 @@ import Foundation
 import Realm
 import Realm.Private
 
+public protocol _RealmObjectSchemaDiscoverable {
+    static var _rlmProperties: [RLMProperty] { get }
+}
+
 // A type which we can get the runtime schema information from
 public protocol _RealmSchemaDiscoverable {
     // The Realm property type associated with this type
@@ -59,6 +63,21 @@ internal extension RLMProperty {
         if valueType._rlmRequireObjc {
             self.updateAccessors()
         }
+    }
+}
+
+public extension RLMProperty {
+    convenience init<T: ObjectBase, U: _Persistable>(name: String, type: _RealmSchemaDiscoverable.Type, keyPath: KeyPath<T, U>, indexed: Bool = false, primaryKey: Bool = false, originProperty: String? = nil) {
+        self.init()
+        self.name = name
+        self.type = type._rlmType
+        self.optional = type._rlmOptional
+        self.indexed = indexed
+        self.isPrimary = primaryKey
+        self.linkOriginPropertyName = originProperty
+        type._rlmPopulateProperty(self)
+        U._rlmSetAccessor(self)
+        self.swiftIvar = ivar_getOffset(class_getInstanceVariable(T.self, "_" + name)!)
     }
 }
 
@@ -179,6 +198,10 @@ private func getLegacyProperties(_ object: ObjectBase, _ cls: ObjectBase.Type) -
 }
 
 private func getProperties(_ cls: RLMObjectBase.Type) -> [RLMProperty] {
+    if let cls = cls as? _RealmObjectSchemaDiscoverable.Type {
+        return cls._rlmProperties
+    }
+
     // Check for any modern properties and only scan for legacy properties if
     // none are found.
     let object = cls.init()
