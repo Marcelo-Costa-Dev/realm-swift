@@ -2988,14 +2988,14 @@
     // Test LogLevel Detail
     logger.level = RLMLogLevelDetail;
     @autoreleasepool { [RLMRealm defaultRealm]; }
-    XCTAssertTrue([logs length] >= 0);
+    XCTAssertTrue([logs length] > 0);
     XCTAssertTrue([logs containsString:@"5 DB:"]); // Detail
     XCTAssertFalse([logs containsString:@"7 DB:"]); // Trace
 
     // Test LogLevel All
     logger.level = RLMLogLevelAll;
     @autoreleasepool { [RLMRealm defaultRealm]; }
-    XCTAssertTrue([logs length] >= 0);
+    XCTAssertTrue([logs length] > 0);
     XCTAssertTrue([logs containsString:@"5 DB:"]); // Detail
     XCTAssertTrue([logs containsString:@"7 DB:"]); // Trace
 
@@ -3024,11 +3024,61 @@
     RLMLogger.defaultLogger = logger;
 
     @autoreleasepool { [RLMRealm defaultRealm]; }
-    XCTAssertTrue([logs length] >= 0);
+    XCTAssertTrue([logs length] > 0);
 
     [logger logWithLevel:RLMLogLevelInfo message:@"%@ IMPORTANT INFO %i", @"TEST:", 0];
     [logger logWithLevel:RLMLogLevelTrace message:@"IMPORTANT TRACE"];
     XCTAssertTrue([logs containsString:@"TEST: IMPORTANT INFO 0"]); // Detail
     XCTAssertFalse([logs containsString:@"IMPORTANT TRACE"]); // Trace
+}
+@end
+
+@interface RLMMetricsTests : RLMTestCase
+@property (nonatomic, strong) RLMLogger *logger;
+@end
+
+@implementation RLMMetricsTests
+- (void)setUp {
+    _logger = RLMLogger.defaultLogger;
+}
+- (void)tearDown {
+    RLMLogger.defaultLogger = _logger;
+}
+
+- (void)assertString:(NSString *)string betweenString:(NSString *)startString endString:(NSString *)endString {
+    NSString *param = @"";
+    NSRange start = [string rangeOfString:startString];
+    if (start.location != NSNotFound)
+    {
+        param = [string substringFromIndex:start.location + start.length];
+        NSRange end = [param rangeOfString:endString];
+        if (end.location != NSNotFound)
+        {
+            param = [param substringToIndex:end.location];
+        }
+    }
+    XCTAssertTrue([param length] > 0);
+}
+
+- (void)testSyncConnectionMetrics {
+    __block NSString *logs = @"";
+    RLMLogger *logger = [[RLMLogger alloc] initWithLevel:RLMLogLevelDebug
+                                             logFunction:^(RLMLogLevel level, NSString * message) {
+        NSString *newLogs = [logs stringByAppendingFormat:@" %@ %lu %@.", [NSDate date], level, message];
+        logs = newLogs;
+
+    }];
+    RLMLogger.defaultLogger = logger;
+    RLMApp *app = [RLMApp appWithId:@"test-id"];
+    // We don't even need the login to succeed, we only want for the logger
+    // to log the values on device info after trying to login.
+    [app loginWithCredential:[RLMCredentials anonymousCredentials] completion:^(RLMUser * _Nullable, NSError * _Nullable) {}];
+    // Verifying that this values are set on device_info, some of this are set by
+    // the sdk (sdk, sdk version, platform version) and some by core (platform, core version).
+    [self assertString:logs betweenString:@"platform: " endString:@" version:"];
+    [self assertString:logs betweenString:@"version: " endString:@" - sdk:"];
+    [self assertString:logs betweenString:@"sdk: " endString:@" - sdk version:"];
+    [self assertString:logs betweenString:@"sdk version: " endString:@" - core"];
+    [self assertString:logs betweenString:@"core version: " endString:@"  ."];
 }
 @end

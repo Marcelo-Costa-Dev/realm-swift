@@ -140,7 +140,7 @@ namespace {
     return nil;
 }
 
-static void RLMConfigureSyncConnectionParameters(realm::app::App::Config config) {
+static void RLMConfigureSyncConnectionParameters(realm::app::App::Config& config) {
     // Anonymized BundleId
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     NSData *bundleIdData = [bundleId dataUsingEncoding:NSUTF8StringEncoding];
