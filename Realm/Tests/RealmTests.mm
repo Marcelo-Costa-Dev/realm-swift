@@ -3066,7 +3066,6 @@
                                              logFunction:^(RLMLogLevel level, NSString * message) {
         NSString *newLogs = [logs stringByAppendingFormat:@" %@ %lu %@.", [NSDate date], level, message];
         logs = newLogs;
-
     }];
     RLMLogger.defaultLogger = logger;
     RLMApp *app = [RLMApp appWithId:@"test-id"];
